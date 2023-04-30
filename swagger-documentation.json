@@ -1,0 +1,1 @@
+{"openapi":"3.0.0","paths":{},"info":{"title":"GRAPHQL API","description":"GRAPHQL API STARTER KIT","version":"1.0","contact":{}},"tags":[],"servers":[{"url":"http://localhost:8989"}],"components":{"securitySchemes":{"cookie":{"type":"apiKey","in":"cookie","name":"graphql-api"}},"schemas":{}}}
