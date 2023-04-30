@@ -21,7 +21,6 @@ import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
       username: process.env.DB_USERNAME,
       password: process.env.LOCAL_DATABASE_PASSWORD,
     }),
-    ProductModule,
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       playground: true,
@@ -37,6 +36,8 @@ import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
         ],
       },
     }),
+
+    ProductModule,
   ],
 })
 export class AppModule {}

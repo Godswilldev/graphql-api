@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ProductResolver } from "./product.resolver";
+import { ProductResolver } from "products/product.resolver";
 
 @Module({
   imports: [],
