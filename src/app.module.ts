@@ -1,10 +1,12 @@
 import { join } from "path";
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
-import { ProductModule } from "products/product.module";
-import { DirectiveLocation, GraphQLDirective } from "graphql";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { User } from "src/user/model/user.model";
+import { UsersModule } from "src/user/user.module";
+import { LoggingPlugin } from "src/utils/logger.utils";
+import { ProductModule } from "src/products/product.module";
 import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
 
 @Module({
@@ -15,7 +17,7 @@ import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
       logging: false,
       type: "postgres",
       synchronize: true,
-      entities: [],
+      entities: [User],
       host: process.env.DB_HOST,
       database: process.env.DB_NAME,
       username: process.env.DB_USERNAME,
@@ -23,21 +25,17 @@ import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      include: [UsersModule, ProductModule],
+      csrfPrevention: true,
+      introspection: true,
       playground: true,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
       driver: ApolloDriver,
-      installSubscriptionHandlers: true,
-      buildSchemaOptions: {
-        directives: [
-          new GraphQLDirective({
-            name: "upper",
-            locations: [DirectiveLocation.FIELD_DEFINITION],
-          }),
-        ],
-      },
     }),
 
+    UsersModule,
     ProductModule,
   ],
+  providers: [LoggingPlugin],
 })
 export class AppModule {}

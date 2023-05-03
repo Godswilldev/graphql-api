@@ -1,14 +1,16 @@
 import * as fs from "fs";
-import { AppModule } from "app.module";
+import * as morgan from "morgan";
+import { AppModule } from "src/app.module";
 import { NestFactory, Reflector } from "@nestjs/core";
-import { GlobalErrorHandler } from "utils/globalErrorHandler";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import { GlobalErrorHandler } from "src/utils/globalErrorHandler";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 
 const bootstrap = async () => {
   const PORT = process.env.PORT || 8989;
   const app = await NestFactory.create(AppModule);
 
+  // app.use(morgan("dev"));
   app.enableCors({ credentials: true, origin: ["http://localhost:3000"] });
   app.setGlobalPrefix("api/v1");
 
