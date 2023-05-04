@@ -1,11 +1,13 @@
 import { join } from "path";
-import { Module, Logger, LoggerService } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { OgmaModule } from "@ogma/nestjs-module";
 import { User } from "src/user/model/user.model";
 import { UsersModule } from "src/user/user.module";
+import { GraphQLParser } from "@ogma/platform-graphql";
 import { ProductModule } from "src/products/product.module";
+import { Module, Logger, LoggerService } from "@nestjs/common";
 import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
 
 export class MyLoggerService extends Logger implements LoggerService {
@@ -30,6 +32,12 @@ export class MyLoggerService extends Logger implements LoggerService {
       password: process.env.LOCAL_DATABASE_PASSWORD,
     }),
 
+    OgmaModule.forRoot({
+      interceptor: {
+        gql: GraphQLParser,
+      },
+    }),
+
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       include: [UsersModule, ProductModule],
@@ -40,6 +48,7 @@ export class MyLoggerService extends Logger implements LoggerService {
       autoTransformHttpErrors: true,
       logger: new MyLoggerService(),
       useGlobalPrefix: true,
+      context: ({ req, res }) => ({ req, res }),
       formatError: (formattedError): any => {
         return {
           message: formattedError.message,
