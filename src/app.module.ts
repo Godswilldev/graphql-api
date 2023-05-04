@@ -1,13 +1,19 @@
 import { join } from "path";
-import { Module } from "@nestjs/common";
+import { Module, Logger, LoggerService } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "src/user/model/user.model";
 import { UsersModule } from "src/user/user.module";
-import { LoggingPlugin } from "src/utils/logger.utils";
 import { ProductModule } from "src/products/product.module";
 import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
+
+export class MyLoggerService extends Logger implements LoggerService {
+  info(message: unknown) {
+    console.log(message);
+    return message;
+  }
+}
 
 @Module({
   imports: [
@@ -25,17 +31,28 @@ import { ApolloDriverConfig, ApolloDriver } from "@nestjs/apollo";
     }),
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
       include: [UsersModule, ProductModule],
       csrfPrevention: true,
       introspection: true,
       playground: true,
       autoSchemaFile: join(process.cwd(), "src/schema.gql"),
-      driver: ApolloDriver,
+      autoTransformHttpErrors: true,
+      logger: new MyLoggerService(),
+      useGlobalPrefix: true,
+      formatError: (formattedError): any => {
+        return {
+          message: formattedError.message,
+          path: formattedError.path,
+          code: formattedError.extensions?.code,
+          originalError: formattedError.extensions?.originalError,
+        };
+      },
     }),
 
     UsersModule,
     ProductModule,
   ],
-  providers: [LoggingPlugin],
+  // providers: [LoggingPlugin],
 })
 export class AppModule {}

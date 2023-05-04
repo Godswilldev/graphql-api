@@ -32,8 +32,6 @@ input CreateUserInput {
   name: String!
   email: String!
   phoneNumber: String!
-  photo: String!
+  photo: String
   password: String!
-  isEmailVerified: Boolean!
-  role: String!
 }
